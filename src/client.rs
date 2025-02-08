@@ -33,7 +33,11 @@ impl ApiClient {
 
     pub async fn get<T: serde::de::DeserializeOwned>(&self, endpoint: &str) -> Result<T, ApiError> {
         let url = format!("{}/{}", self.base_url, endpoint);
-        let request = self.client.get(&url).query(&[("app_id", &self.app_id)]);
+
+        let request = self
+            .client
+            .get(&url)
+            .header("Authorization", format!("Token {}", self.app_id));
         let response = request.send().await?;
         let data = response.json::<T>().await?;
         Ok(data)

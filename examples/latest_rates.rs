@@ -1,3 +1,4 @@
+use openexchangerate_rs::error::ApiError;
 use openexchangerate_rs::latest::Latest;
 use openexchangerate_rs::ApiClient;
 use std::env;
@@ -9,6 +10,6 @@ async fn main() {
     // client
     match client.get::<Latest>("latest.json").await {
         Ok(data) => println!("{:?}", data.rates),
-        Err(error) => println!("Error: {error}"),
+        Err(ApiError::HttpError(inner)) => println!("Error: {inner}"),
     };
 }
