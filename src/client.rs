@@ -1,6 +1,9 @@
 use reqwest::Client;
+use std::collections::HashMap;
 use std::env;
 
+use crate::models::conversion::ConversionResponse;
+use crate::models::rates::Rates;
 use crate::{error::ConfigError, ApiError};
 
 pub struct ApiClient {
@@ -41,5 +44,34 @@ impl ApiClient {
         let response = request.send().await?;
         let data = response.json::<T>().await?;
         Ok(data)
+    }
+
+    pub async fn latest(&self) -> Result<Rates, ApiError> {
+        self.get("latest.json").await
+    }
+    pub async fn historical(&self, date: &str) -> Result<Rates, ApiError> {
+        if !regex::Regex::new(r"^\d{4}-\d{2}-\d{2}$")
+            .unwrap()
+            .is_match(date)
+        {
+            return Err(ApiError::InvalidDateFormat);
+        }
+        self.get::<Rates>(&format!("historical/{}.json", date))
+            .await
+    }
+
+    pub async fn currencies(&self) -> Result<HashMap<String, String>, ApiError> {
+        self.get("currencies.json").await
+    }
+
+    pub async fn convert(
+        &self,
+        value: i32,
+        from: &str,
+        to: &str,
+    ) -> Result<ConversionResponse, ApiError> {
+        let url = format!("convert/{value}/{from}/{to}");
+        println!("{url}");
+        self.get::<ConversionResponse>(&url).await
     }
 }

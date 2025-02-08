@@ -3,7 +3,7 @@ use serde::Serialize;
 use std::collections::HashMap;
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Latest {
+pub struct Rates {
     pub disclaimer: String,
     pub license: String,
     pub timestamp: u32,

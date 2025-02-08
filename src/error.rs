@@ -4,6 +4,8 @@ use thiserror::Error;
 pub enum ApiError {
     #[error("Http error")]
     HttpError(#[from] reqwest::Error),
+    #[error("Invalid date format")]
+    InvalidDateFormat,
 }
 
 #[derive(Debug, Error)]
